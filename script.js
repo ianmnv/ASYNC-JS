@@ -90,6 +90,7 @@ const renderData = function (data, className = '') {
   countriesContainer.style.opacity = 1;
 };
 
+/*
 const getCountryAndNeighbour = function (country) {
   // AJAX call country 1
   const request = new XMLHttpRequest();
@@ -127,3 +128,49 @@ getCountryAndNeighbour('mexico');
 // // getCountryAndNeighbour('colombia');
 // getCountryAndNeighbour('japan');
 // getCountryAndNeighbour('spain');
+
+*/
+
+///////////////////
+// //// PROMISES AND THE FETCH API
+
+// Old way of AJAX calls
+// const request = new XMLHttpRequest();
+// request.open('GET', `https://restcountries.com/v3.1/name/${country}`);
+// request.send();
+
+// Modern way
+// const request = fetch('https://restcountries.com/v3.1/name/mexico');
+
+// //// CONSUMING PROMISES
+
+// const getCountryData = function (country) {
+//   fetch(`https://restcountries.com/v3.1/name/${country}`)
+//     .then(function (response) {
+//       console.log(response);
+//       return response.json();
+//     })
+//     .then(function (data) {
+//       console.log(data);
+//     });
+// };
+
+const getCountryData = function (country) {
+  fetch(`https://restcountries.com/v3.1/name/${country}`)
+    .then(response => response.json())
+    .then(d => {
+      const [data] = d;
+      renderData(data);
+
+      // //// --CHAINING PROMISES--
+      const neighbour = data.borders?.[0];
+      return fetch(`https://restcountries.com/v3.1/alpha/${neighbour}`);
+    })
+    .then(res => res.json())
+    .then(d => {
+      const [data] = d;
+      renderData(data, 'neighbour');
+    });
+};
+
+getCountryData('mexico');
