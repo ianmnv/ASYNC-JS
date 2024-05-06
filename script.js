@@ -160,19 +160,73 @@ getCountryAndNeighbour('mexico');
 //     });
 // };
 
+// //// --THROWING ERRORS MANUALLY--
+
+// const getCountryData = function (country) {
+//   fetch(`https://restcountries.com/v3.1/name/${country}`)
+//     // //// --HANDLING REJECTED PROMISES--
+//     .then(response => {
+//       console.log(response);
+//       if (!response.ok) throw new Error(`Country not found ${response.status}`);
+
+//       return response.json();
+//     })
+//     .then(d => {
+//       const [data] = d;
+//       renderData(data);
+
+//       // //// --CHAINING PROMISES--
+//       // const neighbour = data.borders?.[0];
+
+//       const neighbour = 'lasagna';
+//       return fetch(`https://restcountries.com/v3.1/alpha/${neighbour}`);
+//     })
+//     .then(res => {
+//       if (!res.ok) throw new Error(`Country not found ${res.status}`);
+
+//       return res.json();
+//     })
+//     .then(d => {
+//       const [data] = d;
+//       renderData(data, 'neighbour');
+//     })
+//     .catch(err => {
+//       console.error(err);
+//       renderError(`Something went wrong. ${err.message}. Try again.`);
+//     })
+//     .finally(() => {
+//       countriesContainer.style.opacity = 1;
+//     });
+// };
+
 const getCountryData = function (country) {
-  fetch(`https://restcountries.com/v3.1/name/${country}`)
-    // //// --HANDLING REJECTED PROMISES--
-    .then(response => response.json())
+  const getJSON = function (url, errorMsg = 'Something went wrong') {
+    return (
+      fetch(url)
+        // //// --HANDLING REJECTED PROMISES--
+        .then(response => {
+          if (!response.ok) throw new Error(`${errorMsg} ${response.status}`);
+
+          return response.json();
+        })
+    );
+  };
+
+  getJSON(`https://restcountries.com/v3.1/name/${country}`, 'Country not found')
     .then(d => {
       const [data] = d;
       renderData(data);
 
       // //// --CHAINING PROMISES--
       const neighbour = data.borders?.[0];
-      return fetch(`https://restcountries.com/v3.1/alpha/${neighbour}`);
+
+      // const neighbour = 'lasagna';
+      if (!neighbour) throw new Error('Neighbour country not found!');
+      return getJSON(
+        `https://restcountries.com/v3.1/alpha/${neighbour}`,
+        'Country not found'
+      );
     })
-    .then(res => res.json())
     .then(d => {
       const [data] = d;
       renderData(data, 'neighbour');
@@ -189,3 +243,5 @@ const getCountryData = function (country) {
 btn.addEventListener('click', function () {
   getCountryData('mexico');
 });
+
+getCountryData('australia');
