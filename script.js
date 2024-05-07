@@ -48,7 +48,6 @@ const renderData = function (data, className = '') {
 
 // //// --OUR FIRST AJAX CALL: XMLHttpRequest--
 
-/*
 const getCountryData = function (country) {
   const request = new XMLHttpRequest();
   request.open('GET', `https://restcountries.com/v3.1/name/${country}`);
@@ -57,7 +56,6 @@ const getCountryData = function (country) {
 
   request.addEventListener('load', function () {
     const [data] = JSON.parse(this.responseText);
-    console.log(data);
 
     const html = `
   <article class="country">
@@ -84,14 +82,12 @@ const getCountryData = function (country) {
   });
 };
 
-getCountryData('mexico');
-getCountryData('usa');
-getCountryData('canada');
-// getCountryData('colombia');
-getCountryData('japan');
-getCountryData('spain');
-
-*/
+// getCountryData('mexico');
+// getCountryData('usa');
+// getCountryData('canada');
+// // getCountryData('colombia');
+// getCountryData('japan');
+// getCountryData('spain');
 
 // //// --WELCOME TO CALLBACK HELL--
 
@@ -358,7 +354,10 @@ const getCountry2 = function (country) {
     })
     .finally(() => (countriesContainer.style.opacity = 1));
 };
+
 */
+
+/*
 
 // //// --BUILDING A SIMPLE PROMISE--
 const lotteryPromise = new Promise(function (resolve, reject) {
@@ -400,33 +399,76 @@ wait(2)
 Promise.resolve('abc').then(res => console.log(res));
 Promise.reject(new Error('Problem')).catch(res => console.error(res));
 
-// //// --CONSUMING PROMISES WITH ASYNC/AWAIT--
+*/
+// //// --PROMISIFYING THE GEOLOCATION API--
 
 const getPosition = function () {
-  return new Promise(function (resolved, reject) {
-    navigator.geolocation.getCurrentPosition(resolved, reject);
+  return new Promise(function (resolve, reject) {
+    // navigator.geolocation.getCurrentPosition(
+    //   position => resolve(position),
+    //   err => reject(err)
+    // );
+    navigator.geolocation.getCurrentPosition(resolve, reject);
   });
 };
 
-const whereAmI = async function () {
-  // fetch(`https://restcountries.com/v3.1/name/${country}`).then(res =>
-  //   console.log(res)
-  // );
+// getPosition().then(position => console.log(position));
 
-  // Geolocation
-  const position = await getPosition();
-  const { latitude: lat, longitude: lng } = position.coords;
+const whereAmI = function () {
+  getPosition()
+    .then(position => {
+      const { latitude: lat, longitude: lng } = position.coords;
 
-  // Reverse geocoding
-  const resGeo = await fetch(`https://geocode.xyz/${lat},${lng}?geoit=json`);
-  const dataGeo = await resGeo.json();
+      return fetch(`https://geocode.xyz/${lat},${lng}?geoit=json`);
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (!data.city || !data.country)
+        throw new Error(`Something went wrong, could not find city or country`);
+      const city = data.city;
+      const country = data.country;
+      console.log(`You are in the city of ${city}, ${country}`);
 
-  // Country data
-  const response = await fetch(
-    `https://restcountries.com/v3.1/name/${dataGeo.country}`
-  );
-  const [data] = await response.json();
-  renderData(data);
+      return fetch(`https://restcountries.com/v3.1/name/${country}`);
+    })
+    .then(res => res.json())
+    .then(data => {
+      const [country] = data;
+      console.log(country);
+      renderData(country);
+    })
+    .catch(error => console.error(error));
 };
 
-whereAmI();
+btn.addEventListener('click', whereAmI);
+
+// //// --CONSUMING PROMISES WITH ASYNC/AWAIT--
+
+// const getPosition = function () {
+//   return new Promise(function (resolved, reject) {
+//     navigator.geolocation.getCurrentPosition(resolved, reject);
+//   });
+// };
+
+// const whereAmI = async function () {
+//   // fetch(`https://restcountries.com/v3.1/name/${country}`).then(res =>
+//   //   console.log(res)
+//   // );
+
+//   // Geolocation
+//   const position = await getPosition();
+//   const { latitude: lat, longitude: lng } = position.coords;
+
+//   // Reverse geocoding
+//   const resGeo = await fetch(`https://geocode.xyz/${lat},${lng}?geoit=json`);
+//   const dataGeo = await resGeo.json();
+
+//   // Country data
+//   const response = await fetch(
+//     `https://restcountries.com/v3.1/name/${dataGeo.country}`
+//   );
+//   const [data] = await response.json();
+//   renderData(data);
+// };
+
+// whereAmI();
