@@ -5,7 +5,7 @@ const countriesContainer = document.querySelector('.countries');
 
 const renderError = function (msg) {
   countriesContainer.insertAdjacentText('afterbegin', msg);
-  // countriesContainer.style.opacity = 1;
+  countriesContainer.style.opacity = 1;
 };
 
 const renderData = function (data, className = '') {
@@ -30,7 +30,7 @@ const renderData = function (data, className = '') {
   `;
   countriesContainer.insertAdjacentHTML('beforeend', html);
 
-  // countriesContainer.style.opacity = 1;
+  countriesContainer.style.opacity = 1;
 };
 
 ///////////////////////////////////////
@@ -199,6 +199,8 @@ getCountryAndNeighbour('mexico');
 //     });
 // };
 
+/*
+
 const getCountryData = function (country) {
   const getJSON = function (url, errorMsg = 'Something went wrong') {
     return (
@@ -247,6 +249,8 @@ btn.addEventListener('click', function () {
 // getCountryData('australia');
 // getCountryData('jhsd');
 
+*/
+
 /* 
 ///////////////////////   Coding Challenge #1
 In this challenge you will build a function 'whereAmI' which renders a country
@@ -294,6 +298,7 @@ Test data:
 § Coordinates 3: -33.933, 18.474 
 */
 
+/*
 // Step 1
 const whereAmI = function (lat, lng) {
   // Step 2
@@ -353,3 +358,44 @@ const getCountry2 = function (country) {
     })
     .finally(() => (countriesContainer.style.opacity = 1));
 };
+*/
+
+// //// --BUILDING A SIMPLE PROMISE--
+const lotteryPromise = new Promise(function (resolve, reject) {
+  console.log('Lottery is happening');
+  setTimeout(function () {
+    if (Math.random() > 0.5) {
+      resolve('You win the lottery');
+    } else {
+      reject(new Error('You lost your bet'));
+    }
+  }, 2000);
+});
+
+lotteryPromise.then(res => console.log(res)).catch(err => console.error(err));
+
+// Promisifying setTimeout
+const wait = seconds =>
+  new Promise(resolved => setTimeout(resolved, seconds * 1000));
+
+wait(2)
+  .then(() => {
+    console.log('Waited for 1 sec');
+    return wait(1);
+  })
+  .then(() => {
+    console.log('Waited for 2 sec');
+    return wait(1);
+  })
+  .then(() => {
+    console.log('Waited for 3 sec');
+    return wait(1);
+  })
+  .then(() => {
+    console.log('Waited for 4 sec');
+    return wait(1);
+  })
+  .then(() => console.log('Wait 5 sec'));
+
+Promise.resolve('abc').then(res => console.log(res));
+Promise.reject(new Error('Problem')).catch(res => console.error(res));
