@@ -399,3 +399,34 @@ wait(2)
 
 Promise.resolve('abc').then(res => console.log(res));
 Promise.reject(new Error('Problem')).catch(res => console.error(res));
+
+// //// --CONSUMING PROMISES WITH ASYNC/AWAIT--
+
+const getPosition = function () {
+  return new Promise(function (resolved, reject) {
+    navigator.geolocation.getCurrentPosition(resolved, reject);
+  });
+};
+
+const whereAmI = async function () {
+  // fetch(`https://restcountries.com/v3.1/name/${country}`).then(res =>
+  //   console.log(res)
+  // );
+
+  // Geolocation
+  const position = await getPosition();
+  const { latitude: lat, longitude: lng } = position.coords;
+
+  // Reverse geocoding
+  const resGeo = await fetch(`https://geocode.xyz/${lat},${lng}?geoit=json`);
+  const dataGeo = await resGeo.json();
+
+  // Country data
+  const response = await fetch(
+    `https://restcountries.com/v3.1/name/${dataGeo.country}`
+  );
+  const [data] = await response.json();
+  renderData(data);
+};
+
+whereAmI();
