@@ -482,6 +482,9 @@ Test data: Images in the img folder. Test the error handler by passing a wrong
 image path. Set the network speed to “Fast 3G” in the dev tools Network tab,
 otherwise images load too fast
 */
+
+/*
+
 const wait = seconds =>
   new Promise(resolved => setTimeout(resolved, seconds * 1000));
 
@@ -523,33 +526,46 @@ createImage('img/img-1.jpg')
   })
   .catch(err => console.error(err));
 
+*/
+
 // //// --CONSUMING PROMISES WITH ASYNC/AWAIT--
 
-// const getPosition = function () {
-//   return new Promise(function (resolved, reject) {
-//     navigator.geolocation.getCurrentPosition(resolved, reject);
-//   });
-// };
+const getPosition = function () {
+  return new Promise(function (resolved, reject) {
+    navigator.geolocation.getCurrentPosition(resolved, reject);
+  });
+};
 
-// const whereAmI = async function () {
-//   // fetch(`https://restcountries.com/v3.1/name/${country}`).then(res =>
-//   //   console.log(res)
-//   // );
+const whereAmI = async function () {
+  // fetch(`https://restcountries.com/v3.1/name/${country}`).then(res =>
+  //   console.log(res)
+  // );
 
-//   // Geolocation
-//   const position = await getPosition();
-//   const { latitude: lat, longitude: lng } = position.coords;
+  // //// --ERROR HANDLING WITH TRY...CATCH--
+  try {
+    // Geolocation
+    const position = await getPosition();
+    const { latitude: lat, longitude: lng } = position.coords;
 
-//   // Reverse geocoding
-//   const resGeo = await fetch(`https://geocode.xyz/${lat},${lng}?geoit=json`);
-//   const dataGeo = await resGeo.json();
+    // Reverse geocoding
+    const resGeo = await fetch(`https://geocode.xyz/${lat},${lng}?geoit=json`);
+    if (!resGeo.ok) throw new Error('Problem getting location data');
+    const dataGeo = await resGeo.json();
 
-//   // Country data
-//   const response = await fetch(
-//     `https://restcountries.com/v3.1/name/${dataGeo.country}`
-//   );
-//   const [data] = await response.json();
-//   renderData(data);
-// };
+    // Country data
+    const response = await fetch(
+      `https://restcountries.com/v3.1/name/${dataGeo.country}`
+    );
+    if (!response.ok) throw new Error('Problem getting location country');
 
-// whereAmI();
+    const [data] = await response.json();
+    renderData(data);
+  } catch (err) {
+    console.error(err);
+    renderError(`Something went wrong, ${err.message}`);
+  }
+};
+
+whereAmI();
+
+// //// --ERROR HANDLING WITH TRY...CATCH--
