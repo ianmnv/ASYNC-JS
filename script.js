@@ -612,3 +612,33 @@ const get3Contries = async function (c1, c2, c3) {
 };
 
 get3Contries('mexico', 'japan', 'canada');
+
+// /// --OTHER PROMISE COMBINATORS: race, allSettled & any--
+// Promise.race
+
+(async function () {
+  const [res] = await Promise.race([
+    getJSON(`https://restcountries.com/v3.1/name/italy`),
+    getJSON(`https://restcountries.com/v3.1/name/mexico`),
+    getJSON(`https://restcountries.com/v3.1/name/japan`),
+  ]);
+  console.log(res);
+})();
+
+// Promise.allSettled
+Promise.allSettled([
+  Promise.resolve('Success'),
+  Promise.reject('Error'),
+  Promise.resolve('Another success'),
+])
+  .then(res => console.log(res))
+  .catch(err => console.error(err));
+
+// Promise.any
+Promise.any([
+  Promise.resolve('Success'),
+  Promise.reject('Error'),
+  Promise.resolve('Another success'),
+])
+  .then(res => console.log(res))
+  .catch(err => console.error(err));
