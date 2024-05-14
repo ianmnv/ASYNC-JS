@@ -560,12 +560,30 @@ const whereAmI = async function () {
 
     const [data] = await response.json();
     renderData(data);
+    // //// --RETURNING VALUES FROM ASYNC FUNCTIONS--
+    return `You are in ${dataGeo.city}, ${dataGeo.country}`;
   } catch (err) {
     console.error(err);
     renderError(`Something went wrong, ${err.message}`);
+
+    throw err;
   }
 };
 
-whereAmI();
+console.log('This is first');
+// console.log(whereAmI());
+// whereAmI()
+//   .then(city => console.log(`2: ${city}`))
+//   .catch(err => console.error(`2: ${err}`))
+//   .finally(() => console.log('This gets printed 3rd'));
 
-// //// --ERROR HANDLING WITH TRY...CATCH--
+// IIFE (Immediatly Invoke Function Expression)
+(async function () {
+  try {
+    const city = await whereAmI();
+    console.log(city);
+  } catch (err) {
+    console.error(err);
+  }
+  console.log('This gets printed 3rd');
+})();
